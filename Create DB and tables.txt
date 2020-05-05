@@ -1,0 +1,55 @@
+Create Database IF NOT EXISTS CPSAProject
+GO
+
+USE CPSAProject
+GO
+
+--Create Dimensions
+
+CREATE TABLE DIMTransaction
+(TRAN_REF_NO Int Identity NOT NULL PRIMARY KEY NONCLUSTERED,
+Local_Amount numeric(10,2) NOT NULL,
+Trans_Amount numeric(10,2) NOT NULL,
+Cardholder_Country varchar(30) NOT NULL,
+Merchant_No varchar(30) NOT NULL,
+Merchant_Category varchar(50) NOT NULL,
+Merchant_Country varchar(50) NOT NULL,
+Trans_Currency varchar(30) NOT NULL,
+Tran_Type varchar(30) NOT NULL
+)
+GO
+
+CREATE TABLE DIMDate
+(DATE_REF_NO Int Identity NOT NULL PRIMARY KEY NONCLUSTERED,
+Transaction_Posting_Date date)
+GO
+
+CREATE TABLE DIMSchemeFee
+(SCHEME_REF_NO Int Identity NOT NULL PRIMARY KEY NONCLUSTERED,
+Area_of_Event varchar(30) NOT NULL,
+FPI varchar(3) NOT NULL,
+Base_Rate varchar(30) NOT NULL,
+Percentage_Rate varchar(30) NOT NULL,
+Interchange_Fee numeric(10,2) NOT NULL)
+GO
+
+--Create Fact table
+
+CREATE TABLE FactContactless
+(
+  TransactionID	INT NOT NULL,
+  TRAN_REF_NO	INT NOT NULL,
+  DATE_REF_NO	INT NOT NULL,
+  SCHEME_REF_NO	INT NOT NULL,
+  PRIMARY KEY (TransactionID),
+  FOREIGN KEY (TRAN_REF_NO) REFERENCES DIMTransaction(TRAN_REF_NO),
+  FOREIGN KEY (DATE_REF_NO) REFERENCES DIMDate(DATE_REF_NO),
+  FOREIGN KEY (SCHEME_REF_NO) REFERENCES DIMSchemeFee(SCHEME_REF_NO),
+  InterchangeFee numeric(10,2) NOT NULL,
+  RankingMerchantCategory VARCHAR (50) NOT NULL,
+  SalesValue numeric(10,2) NOT NULL,
+  AOEMapping VARCHAR (50) NOT NULL,
+  SalesVsRefunds numeric(10,2) NOT NULL,
+  MerchantProcessing VARCHAR (50) NOT NULL
+  );
+GO
